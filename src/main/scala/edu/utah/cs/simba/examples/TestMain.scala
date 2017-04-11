@@ -25,10 +25,17 @@ import scala.collection.mutable.ListBuffer
 /**
   * Created by dongx on 11/14/2016.
   */
+
+class TestMain {
+
+}
+
 object TestMain {
   case class PointData(x: Double, y: Double, z: Double, other: String)
 
   def main(args: Array[String]): Unit = {
+    val testMain : TestMain = new TestMain()
+
     val sparkConf = new SparkConf().setAppName("SpatialOperationExample").setMaster("local[4]")
     val sc = new SparkContext(sparkConf)
     val simbaContext = new SimbaContext(sc)
