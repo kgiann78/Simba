@@ -32,8 +32,14 @@ private[sql] abstract class AbstractSparkSQLParser
     // Initialize the Keywords.
     initLexical
     phrase(start)(new lexical.Scanner(input)) match {
-      case Success(plan, _) => plan
-      case failureOrError => sys.error(failureOrError.toString)
+      case Success(plan, _) => {
+        System.out.print(s"\n\n\nphrase in AbstractSparkSQLParser successfull input $input produces $plan \n\n\n")
+        plan
+      }
+      case failureOrError => {
+        System.out.print(s"\n\n\nphrase in AbstractSparkSQLParser error with input $input will not produce \n\n\n")
+        sys.error(failureOrError.toString)
+      }
     }
   }
   /* One time initialization of lexical.This avoid reinitialization of  lexical in parse method */
@@ -84,8 +90,10 @@ class SqlLexical extends StdLexical {
 
   /* This is a work around to support the lazy setting */
   def initialize(keywords: Seq[String]): Unit = {
+    System.out.println("SqlLexical initializing \n\n" + keywords + "\n\n")
     reserved.clear()
     reserved ++= keywords
+    System.out.println("SqlLexical initialized \n\n" + reserved.toString() + "\n\n")
   }
 
   /* Normal the keyword string */
@@ -141,5 +149,14 @@ class SqlLexical extends StdLexical {
     | '-' ~ '-' ~ chrExcept(EofCh, '\n').*
     | '/' ~ '*' ~ failure("unclosed comment")
     ).*
+
+  /*
+  pointExpression ~ (IN ~ RANGE ~ "(" ~> pointLiteral <~ ",") ~ (pointLiteral <~ ")") ^^
+      { case point ~ point_low ~ point_high => InRange(point, point_low, point_high) }
+    | pointExpression ~ (IN ~ KNN ~ "(" ~> pointLiteral) ~ ("," ~> literal <~ ")") ^^
+      { case point ~ (target: Literal) ~ l => InKNN(point, target, l)}
+    | pointExpression ~ (IN ~ CIRCLERANGE ~ "(" ~> pointLiteral) ~ ("," ~> literal <~ ")") ^^
+      { case point ~ target ~ l => InCircleRange(point, target, l) }
+   */
 }
 

@@ -36,6 +36,7 @@ class DDLParser(parseQuery: String => LogicalPlan)
   extends AbstractSparkSQLParser with DataTypeParser with Logging {
 
   def parse(input: String, exceptionOnError: Boolean): LogicalPlan = {
+    logInfo(s"\n\n\nparse in DDLParser $input \n\n\n")
     try {
       parse(input)
     } catch {

@@ -298,6 +298,7 @@ private[hive] object HiveQl extends Logging {
 
   /** Creates LogicalPlan for a given HiveQL string. */
   def createPlan(sql: String): LogicalPlan = {
+    logInfo(s"\n\n\ncreating plan $sql \n\n\n")
     try {
       val context = createContext()
       val tree = getAst(sql, context)

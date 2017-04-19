@@ -61,7 +61,14 @@ private[hive] object SparkSQLEnv extends Logging {
       hiveContext.metadataHive.setInfo(new PrintStream(System.err, true, "UTF-8"))
       hiveContext.metadataHive.setError(new PrintStream(System.err, true, "UTF-8"))
 
+      System.out.println("Setting conf spark.sql.shuffle.partitions " + 4.toString)
+      hiveContext.setConf("spark.sql.shuffle.partitions", 4.toString)
+
+      System.out.println("Setting conf spark.sql.hive.version " + HiveContext.hiveExecutionVersion)
       hiveContext.setConf("spark.sql.hive.version", HiveContext.hiveExecutionVersion)
+
+      System.out.println("Setting conf SET spark.sql.dialect=sql ")
+      hiveContext.setConf("spark.sql.dialect", "sql")
 
       if (log.isDebugEnabled) {
         hiveContext.hiveconf.getAllProperties.asScala.toSeq.sorted.foreach { case (k, v) =>
@@ -77,7 +84,6 @@ private[hive] object SparkSQLEnv extends Logging {
     // Stop the SparkContext
     if (SparkSQLEnv.sparkContext != null) {
       sparkContext.stop()
-      sparkContext = null
       hiveContext = null
     }
   }

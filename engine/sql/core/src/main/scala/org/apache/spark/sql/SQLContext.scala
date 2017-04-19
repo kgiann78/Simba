@@ -230,7 +230,10 @@ class SQLContext private[sql](
     }
   }
 
-  protected[sql] def parseSql(sql: String): LogicalPlan = ddlParser.parse(sql, false)
+  protected[sql] def parseSql(sql: String): LogicalPlan = {
+    logInfo(s"\n\n\nparseSql in SQLContext $sql \n\n\n")
+    ddlParser.parse(sql, false)
+  }
 
   protected[sql] def executeSql(sql: String):
     org.apache.spark.sql.execution.QueryExecution = executePlan(parseSql(sql))
@@ -850,6 +853,9 @@ class SQLContext private[sql](
    * @since 1.3.0
    */
   def sql(sqlText: String): DataFrame = {
+    logInfo(s"\n\n\nsqlText $sqlText \n\n\n")
+    logInfo(s"\n\n\nparseSql ${parseSql(sqlText).toString()} \n\n\n")
+
     DataFrame(this, parseSql(sqlText))
   }
 

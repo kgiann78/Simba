@@ -42,7 +42,7 @@ import org.apache.spark.sql.catalyst.plans.logical._
 import org.apache.spark.sql.catalyst.{InternalRow, ParserDialect, SqlParser}
 import org.apache.spark.sql.execution.datasources.{DataSourceStrategy, PreInsertCastAndRename, PreWriteCheck, ResolveDataSource}
 import org.apache.spark.sql.execution.ui.SQLListener
-import org.apache.spark.sql.execution.{CacheManager, ExecutedCommand, ExtractPythonUDFs, SetCommand}
+import org.apache.spark.sql.execution.{CacheManager, ExecutedCommand, ExtractPythonUDFs, SetCommand, SparkStrategies}
 import org.apache.spark.sql.hive.client._
 import org.apache.spark.sql.hive.execution.{DescribeHiveTableCommand, HiveNativeCommand}
 import org.apache.spark.sql.types._
@@ -329,6 +329,9 @@ class HiveContext private[hive](
   }
 
   protected[sql] override def parseSql(sql: String): LogicalPlan = {
+    logInfo(s"\n\n\nparseSql $sql \n\n\n")
+    logInfo(s"\n\n\nhiveconf ${hiveconf.toString()} \n\n\n")
+
     super.parseSql(substitutor.substitute(hiveconf, sql))
   }
 
@@ -573,6 +576,7 @@ class HiveContext private[hive](
     val hiveContext = self
 
     override def strategies: Seq[Strategy] = experimental.extraStrategies ++ Seq(
+      SpatialJoinExtractor,
       DataSourceStrategy,
       HiveCommandStrategy(self),
       HiveDDLStrategy,
